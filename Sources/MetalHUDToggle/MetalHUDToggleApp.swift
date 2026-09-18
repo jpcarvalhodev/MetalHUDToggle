@@ -5,15 +5,12 @@ import AppKit
 
 @main
 struct MetalHUDToggleApp: App {
-    @StateObject private var model = HUDModel()
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
+    // The UI lives in a custom status item + panel (see AppDelegate.swift),
+    // so the scene itself is intentionally empty.
     var body: some Scene {
-        MenuBarExtra {
-            MenuView(model: model)
-        } label: {
-            Image(nsImage: MenuBarIcon.image(active: model.enabled))
-        }
-        .menuBarExtraStyle(.window)
+        Settings { EmptyView() }
     }
 }
 
@@ -65,16 +62,19 @@ enum MenuBarIcon {
 
 enum Theme {
     static let accent = Color(red: 0.20, green: 0.91, blue: 0.55)
+    static let cornerRadius: CGFloat = 20
 }
 
 // MARK: - Popover content
 
 struct MenuView: View {
     @ObservedObject var model: HUDModel
+    /// Reports the total content size so the hosting panel can resize itself.
+    var onSizeChange: (CGSize) -> Void = { _ in }
     @State private var expandedGroups: Set<HUDGroup> = []
-    // ScrollView has no intrinsic height inside a MenuBarExtra window, so we measure
+    // ScrollView has no intrinsic height inside a hosting panel, so we measure
     // the content and size the scroll area ourselves (capped so it never outgrows the screen).
-    @State private var contentHeight: CGFloat = 440
+    @State private var contentHeight: CGFloat = 500
     private let maxScrollHeight: CGFloat = 520
 
     var body: some View {
@@ -105,7 +105,19 @@ struct MenuView: View {
             footer
         }
         .frame(width: 340)
+        .fixedSize(horizontal: false, vertical: true)
         .tint(Theme.accent)
+        .background(
+            GeometryReader { proxy in
+                Color.clear.preference(key: PanelSizeKey.self, value: proxy.size)
+            }
+        )
+        .onPreferenceChange(PanelSizeKey.self) { onSizeChange($0) }
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.cornerRadius, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                .allowsHitTesting(false)
+        )
     }
 
     // MARK: Header
@@ -254,6 +266,13 @@ struct MenuView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
+    }
+}
+
+private struct PanelSizeKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
     }
 }
 

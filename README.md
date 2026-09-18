@@ -11,7 +11,7 @@ A tiny macOS menu bar app to turn Apple's **Metal Performance HUD** on and off a
 - Custom position (3×3 grid), scale and opacity
 - Optional logging of frame stats and shader compilation (visible in Console, filter by `metal-HUD`)
 - Start at login, or start at login with the HUD already on
-- Lives in the menu bar only — no Dock icon
+- Lives in the menu bar only — no Dock icon (right-click the icon for Quit)
 
 ## How it works
 
@@ -47,7 +47,8 @@ xattr -dr com.apple.quarantine /Applications/MetalHUDToggle.app
 
 ```
 Sources/MetalHUDToggle/
-  MetalHUDToggleApp.swift   # menu bar UI (SwiftUI MenuBarExtra)
+  MetalHUDToggleApp.swift   # SwiftUI views for the menu bar panel
+  AppDelegate.swift         # status item + rounded translucent panel
   HUDModel.swift            # state, launchctl, login item
   HUDOptions.swift          # HUD elements / positions
 Icon/AppIcon.png            # 1024px source icon (converted to .icns by build_app.sh)
