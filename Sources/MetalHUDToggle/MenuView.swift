@@ -1,19 +1,6 @@
 import SwiftUI
 import AppKit
 
-// MARK: - App
-
-@main
-struct MetalHUDToggleApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-
-    // The UI lives in a custom status item + panel (see AppDelegate.swift),
-    // so the scene itself is intentionally empty.
-    var body: some Scene {
-        Settings { EmptyView() }
-    }
-}
-
 // MARK: - Menu bar glyph
 
 enum MenuBarIcon {

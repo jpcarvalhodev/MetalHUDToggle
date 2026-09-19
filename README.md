@@ -47,8 +47,9 @@ xattr -dr com.apple.quarantine /Applications/MetalHUDToggle.app
 
 ```
 Sources/MetalHUDToggle/
-  MetalHUDToggleApp.swift   # SwiftUI views for the menu bar panel
+  main.swift                # entry point (pure AppKit, no window at launch)
   AppDelegate.swift         # status item + rounded translucent panel
+  MenuView.swift            # SwiftUI views shown inside the panel
   HUDModel.swift            # state, launchctl, login item
   HUDOptions.swift          # HUD elements / positions
 Icon/AppIcon.png            # 1024px source icon (converted to .icns by build_app.sh)
